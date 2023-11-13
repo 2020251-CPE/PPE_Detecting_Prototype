@@ -1,15 +1,18 @@
 from flask import Flask, render_template, Response
 from ultralytics import YOLO
+from datetime import datetime
 import cv2
+import time
+import os
 
 app = Flask(__name__)
-
+now = datetime.now()
+os.makedirs('screenshots', exist_ok=True)
 # Load YOLO model
-model = YOLO('SirOcs/finalBest.pt')
+model = YOLO('finalBest.pt')
 
 # Open camera
-
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 show_live_camera = True  # Flag to toggle between live camera and uploaded content
 
 def generate_frames():
@@ -19,6 +22,16 @@ def generate_frames():
             break
         else:
             results = model.track(frame, persist=True)
+
+            if results and results[0].boxes:
+                current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+                # Save a screenshot
+                screenshot_filename = f'screenshot{current_time}.jpg'
+                cv2.imwrite(screenshot_filename, results[0].plot())
+                print(f'Screenshot saved: {screenshot_filename}')
+                #print(results[0].names, results[0].boxes, results[0].probs)
+                time.sleep(2)
+
             frame = results[0].plot()
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
