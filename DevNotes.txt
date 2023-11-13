@@ -1,6 +1,5 @@
 TO DO
 APllication Executions
 Backend
-
-Add remote to repository
 get Markdown Syntax of Tutorial on GitHub
+Storage Solution: File Storage, so How? (Google Drive API)
