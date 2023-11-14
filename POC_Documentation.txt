@@ -71,3 +71,19 @@ The file structure only consist of these objects:
 MODEL TRAINING IMPLEMENTATION
 
 APPLICATION EXECUTION
+APPLICATION EXECUTION
+Step 1: To Start the app and execute the program, the user must first complete the 'INSTALLATION' portion of the page.
+Step 2: If said task is fully completed, run Flask by using the following command in your Terminal/CMD:
+    > python app.py
+    A prompt will appear, among other things, that shows the localhost locations as well as a port where the OptiSafe is available. such prompts usually appear as such:
+        localhost:5000 or 127.0.0.1:5000
+Step 3: Finally, Ctrl + Click that localhost address or type said address to a Browser's Web address to finally run the WebApp
+Step 4: bring or wear a PPE to Test it in front of your Webcam/camera
+NOTE: As of Writing the following are PPEs that the app's Model is trained for and therefore, may detect more in production:
+- Apron 
+- Bunny Suit
+- Gloves
+- Respiratory Mask
+- Head Cap
+- Goggles
+
