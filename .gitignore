@@ -1,3 +1,5 @@
 best.pt
 MLvenv
 .venv
+__pycache__
+screenshots/
