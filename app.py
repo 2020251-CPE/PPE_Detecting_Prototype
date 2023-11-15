@@ -1,6 +1,9 @@
 from flask import Flask, render_template, Response
 from ultralytics import YOLO
 from datetime import datetime
+from collections import Counter 
+import numpy as np
+import mysql.connector
 import cv2
 import time
 import os
@@ -26,10 +29,19 @@ def generate_frames():
             if results and results[0].boxes:
                 current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
                 # Save a screenshot
-                screenshot_filename = f'screenshot{current_time}.jpg'
+                screenshot_filename = f'screenshots/screenshot{current_time}.jpg'
                 cv2.imwrite(screenshot_filename, results[0].plot())
                 print(f'Screenshot saved: {screenshot_filename}')
-                #print(results[0].names, results[0].boxes, results[0].probs)
+                print(f'screenshot{current_time}.jpg')
+                classArray = results[0].boxes.cls.numpy().copy()
+                result_dict = Counter(classArray)
+
+                maxIndex=5
+                my_array = [0] * (maxIndex + 1)
+                for index, frequency in result_dict.items():
+                    my_array[int(index)] = int(frequency)
+                print(my_array)
+
                 time.sleep(2)
 
             frame = results[0].plot()
@@ -44,6 +56,8 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
+    if connection.is_connected():
+        print("Connected to MySQL database")
     if show_live_camera:
         return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
