@@ -2,4 +2,7 @@ TO DO
 APllication Executions
 Backend
 get Markdown Syntax of Tutorial on GitHub
-Storage Solution: File Storage, so How? (Google Drive API)
+Picture Storage Solution: File Storage, so How? (Google Drive API)
+    Status: can't solve URI mismatch Error
+Database to save ppe Detection records
+    Save data to MySQL? (see sql/TableCreation.sql)
