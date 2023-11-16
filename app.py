@@ -3,7 +3,6 @@ from ultralytics import YOLO
 from datetime import datetime
 from collections import Counter 
 import numpy as np
-import mysql.connector
 import cv2
 import time
 import os
@@ -28,6 +27,7 @@ def generate_frames():
 
             if results and results[0].boxes:
                 current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+                
                 # Save a screenshot
                 screenshot_filename = f'screenshots/screenshot{current_time}.jpg'
                 cv2.imwrite(screenshot_filename, results[0].plot())
@@ -36,12 +36,12 @@ def generate_frames():
                 classArray = results[0].boxes.cls.numpy().copy()
                 result_dict = Counter(classArray)
 
-                maxIndex=5
-                my_array = [0] * (maxIndex + 1)
+                #Counts all Objects noticed and puts it in an array
+                # index = object no, value = frequency 
+                my_array = [0] * (6)
                 for index, frequency in result_dict.items():
                     my_array[int(index)] = int(frequency)
                 print(my_array)
-
                 time.sleep(2)
 
             frame = results[0].plot()
@@ -56,10 +56,8 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
-    if connection.is_connected():
-        print("Connected to MySQL database")
     if show_live_camera:
         return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
+    
 if __name__ == '__main__':
     app.run(debug=True)
