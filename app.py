@@ -13,6 +13,7 @@ os.makedirs('screenshots', exist_ok=True)
 # Load YOLO model
 model = YOLO('finalBest.pt')
 
+
 # Open camera
 cap = cv2.VideoCapture(0)
 show_live_camera = True  # Flag to toggle between live camera and uploaded content
@@ -27,21 +28,19 @@ def generate_frames():
 
             if results and results[0].boxes:
                 current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-                
+
                 # Save a screenshot
                 screenshot_filename = f'screenshots/screenshot{current_time}.jpg'
                 cv2.imwrite(screenshot_filename, results[0].plot())
                 print(f'Screenshot saved: {screenshot_filename}')
                 print(f'screenshot{current_time}.jpg')
-                classArray = results[0].boxes.cls.numpy().copy()
-                result_dict = Counter(classArray)
 
-                #Counts all Objects noticed and puts it in an array
-                # index = object no, value = frequency 
-                my_array = [0] * (6)
-                for index, frequency in result_dict.items():
-                    my_array[int(index)] = int(frequency)
-                print(my_array)
+                # create frequency array of objects detected
+                classArray = results[0].boxes.cls.numpy().copy()
+                objArray = [0] * (max(results[0].names)+1)
+                for value in classArray:
+                    objArray[int(value)] += 1
+                pDerint(objArray) 
                 time.sleep(2)
 
             frame = results[0].plot()
