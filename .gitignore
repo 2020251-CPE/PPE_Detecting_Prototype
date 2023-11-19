@@ -3,3 +3,4 @@ MLvenv
 .venv
 __pycache__
 screenshots/
+.env
