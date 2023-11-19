@@ -1,14 +1,18 @@
 TO DO
-APllication Executions
+Application Executions
 Backend
 get Markdown Syntax of Tutorial on GitHub
 Picture Storage Solution: File Storage, so How? (Google Drive API)
     Status: can't solve URI mismatch Error
 Database to save ppe Detection records
-    Save data to PostgreSQL , specifically NeonDB
+    Save data to PostgreSQL , specifically NeonDB via psycopg2
+    > I get a "psycopg2.OperationalError: could not translate host name "
+        when using dotenv for my connection, why is that?
 
 OTHER NOTES: 
 > the app.py has pretty scuffed, almost everything runs on one function- 
-    the object detection, the screenshot & save process, the screeenshot 
-    metadata extration, the data POST to DB. almost everything. Any
+    the object detection, the screenshot & save process, the screenshot 
+    metadata extraction, the data POST to DB. almost everything. Any
     suggestions on how to fix this?
+    > Update: screenshot process is separated via its own function running in its own thread
+> in later stage of development, do not plot detected objects if confidence is lower that .60
