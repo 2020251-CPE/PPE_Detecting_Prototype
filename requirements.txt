@@ -7,7 +7,6 @@ cycler==0.12.1
 Cython==3.0.5
 filelock==3.13.1
 Flask==3.0.0
-Flask-SQLAlchemy==3.1.1
 fonttools==4.44.1
 fsspec==2023.10.0
 greenlet==3.0.1
@@ -42,13 +41,13 @@ psycopg2-binary==2.9.9
 py-cpuinfo==9.0.0
 pyparsing==3.1.1
 python-dateutil==2.8.2
+python-dotenv==1.0.0
 pytz==2023.3.post1
 PyYAML==6.0.1
 requests==2.31.0
 scipy==1.11.3
 seaborn==0.13.0
 six==1.16.0
-SQLAlchemy==2.0.23
 sympy==1.12
 thop==0.1.1.post2209072238
 torch==2.1.0
