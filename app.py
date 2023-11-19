@@ -1,9 +1,9 @@
 from flask import Flask, render_template, Response
-from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
 from datetime import datetime
 from ultralytics import YOLO
 import threading
-import numpy
+import psycopg2
 import time
 import cv2
 import os
@@ -21,6 +21,14 @@ now = datetime.now()
 show_live_camera = True  # Flag to toggle between live camera and uploaded content
 last_screenshot_time = time.time()  # Variable to track the last screenshot time
 screenshot_interval = 2  # Set the interval for taking screenshots (in seconds)
+
+load_dotenv()
+conn = psycopg2.connect(
+        host= 'your_db_host',
+        database= 'your_db_name',
+        user= 'your_db_user',
+        password= 'your_db_password'
+        )
 
 def generate_frames():
     global last_screenshot_time
@@ -47,14 +55,26 @@ def generate_frames():
 def take_screenshot(results):
     '''Takes a Screenshot and saves it to a designated directory'''
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    screenshot_filename = f'screenshots/screenshot{current_time}.jpg'
-    cv2.imwrite(screenshot_filename, results[0].plot())
-    print(f'Screenshot saved: {screenshot_filename}')  # FileLocation
+    screenshot_fileLoc = f'screenshots/screenshot{current_time}.jpg'
+    screenshot_filename = f'screenshot{current_time}.jpg'
+    cv2.imwrite(screenshot_fileLoc, results[0].plot())
+    print(f'Screenshot saved: {screenshot_fileLoc}')  # FileLocation
     classArray = results[0].boxes.cls.numpy().copy()
     objArray = [0] * (max(results[0].names)+1)
     for value in classArray:
-        objArray[int(value)] += 1 # Counts the frequencies a class(index) is detected in frame
-    print(objArray) 
+        objArray[int(value)] += 1 # Counts the frequencies a class(index) is detected in frame 
+
+    upload_metadata(screenshot_filename,screenshot_fileLoc,datetime.now().strftime("%Y-%m-%d %H:%M:%S"),objArray)
+
+def upload_metadata(filename,fileLoc,datetime,array):
+    cur = conn.cursor()
+    cur.execute(
+        query='INSERT INTO ppe_log (photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount) VALUES (%s, %s, %s,%s, %s, %s, %s, %s,%s)',
+        vars=(filename, fileLoc, datetime, array[0], array[1], array[2], array[3], array[4], array[5])
+        )
+    conn.commit()
+    cur.close()
+
 
 @app.route('/')
 def index():
