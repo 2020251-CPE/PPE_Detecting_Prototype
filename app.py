@@ -1,5 +1,5 @@
 from flask import Flask, render_template, Response
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 from datetime import datetime
 from ultralytics import YOLO
 import threading
@@ -9,8 +9,6 @@ import cv2
 import os
 
 app = Flask(__name__)
-
-
 os.makedirs('screenshots', exist_ok=True)
 # Load YOLO model
 model = YOLO('finalBest.pt')
@@ -24,10 +22,11 @@ screenshot_interval = 2  # Set the interval for taking screenshots (in seconds)
 
 load_dotenv()
 conn = psycopg2.connect(
-        host= 'your_db_host',
-        database= 'your_db_name',
-        user= 'your_db_user',
-        password= 'your_db_password'
+        host= os.getenv('DB_HOST'),
+        database= os.getenv('DB_NAME'),
+        user= os.getenv('DB_USER'),
+        password= os.getenv('DB_PASSWORD'),
+        sslmode='require'
         )
 
 def generate_frames():
@@ -64,7 +63,7 @@ def take_screenshot(results):
     for value in classArray:
         objArray[int(value)] += 1 # Counts the frequencies a class(index) is detected in frame 
 
-    upload_metadata(screenshot_filename,screenshot_fileLoc,datetime.now().strftime("%Y-%m-%d %H:%M:%S"),objArray)
+    #upload_metadata(screenshot_filename,screenshot_fileLoc,datetime.now().strftime("%Y-%m-%d %H:%M:%S"),objArray)
 
 def upload_metadata(filename,fileLoc,datetime,array):
     cur = conn.cursor()
