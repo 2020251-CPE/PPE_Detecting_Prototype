@@ -4,3 +4,4 @@ MLvenv
 __pycache__
 screenshots/
 .env
+test/
