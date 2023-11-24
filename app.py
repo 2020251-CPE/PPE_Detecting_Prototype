@@ -1,5 +1,5 @@
 from flask import Flask, render_template, Response
-from dotenv import load_dotenv, dotenv_values
+from dotenv import load_dotenv
 from datetime import datetime
 from ultralytics import YOLO
 import threading
@@ -63,7 +63,7 @@ def take_screenshot(results):
     for value in classArray:
         objArray[int(value)] += 1 # Counts the frequencies a class(index) is detected in frame 
 
-    #upload_metadata(screenshot_filename,screenshot_fileLoc,datetime.now().strftime("%Y-%m-%d %H:%M:%S"),objArray)
+    upload_metadata(screenshot_filename,screenshot_fileLoc,datetime.now().strftime("%Y-%m-%d %H:%M:%S"),objArray)
 
 def upload_metadata(filename,fileLoc,datetime,array):
     cur = conn.cursor()
