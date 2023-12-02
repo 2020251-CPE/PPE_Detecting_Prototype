@@ -66,6 +66,7 @@ def take_screenshot(results):
     upload_metadata(screenshot_filename,screenshot_fileLoc,datetime.now().strftime("%Y-%m-%d %H:%M:%S"),objArray)
 
 def upload_metadata(filename,fileLoc,datetime,array):
+    '''Uploads Screenshot Metadata to Database'''
     cur = conn.cursor()
     cur.execute(
         query='INSERT INTO ppe_log (photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount) VALUES (%s, %s, %s,%s, %s, %s, %s, %s,%s)',
