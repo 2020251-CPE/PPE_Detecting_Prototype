@@ -1,13 +1,16 @@
 TO DO
 Application Executions
 Backend
-get Markdown Syntax of Tutorial on GitHub
-Picture Storage Solution: File Storage, so How? (Google Drive API)
+> get Markdown Syntax of Tutorial on GitHub
+> Picture Storage Solution: File Storage, so How? (Google Drive API)
     Status: can't solve URI mismatch Error
-Database to save ppe Detection records
-    Save data to PostgreSQL , specifically NeonDB via psycopg2
-    > I get a "psycopg2.OperationalError: could not translate host name "
-        when using dotenv for my connection, why is that?
+> Database to save ppe Detection records - DONE
+    Save data to PostgreSQL , specifically NeonDB via psycopg2 - DONE
+> Create Admin dashboard to query certain screenshots - PRIO
+    Create SQL VIEWS for certain Queries
+    Create Admin dashboard 
+        FrontEnd
+        BackEnd
 
 OTHER NOTES: 
 > the app.py has pretty scuffed, almost everything runs on one function- 
