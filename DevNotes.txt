@@ -6,9 +6,18 @@ Backend
     Status: can't solve URI mismatch Error
 > Database to save ppe Detection records - DONE
     Save data to PostgreSQL , specifically NeonDB via psycopg2 - DONE
+    Make VIEW for Query screenshots that are:
+        Complete PPE 
+        No Mask
+        No Apron 
+        No Gloves 
+        No Headcap
+        No Bunny Suit
+        No Goggles
+
 > Create Admin dashboard to query certain screenshots - PRIO
     Create SQL VIEWS for certain Queries
-    Create Admin dashboard 
+    Create Admin dashboard?
         FrontEnd
         BackEnd
 
