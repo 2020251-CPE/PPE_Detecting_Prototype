@@ -18,7 +18,7 @@ cap = cv2.VideoCapture(0)
 now = datetime.now()
 show_live_camera = True  # Flag to toggle between live camera and uploaded content
 last_screenshot_time = time.time()  # Variable to track the last screenshot time
-screenshot_interval = 2  # Set the interval for taking screenshots (in seconds)
+screenshot_interval = 6  # Set the interval for taking screenshots (in seconds)
 
 load_dotenv()
 conn = psycopg2.connect(
