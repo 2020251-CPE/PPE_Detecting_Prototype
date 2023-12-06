@@ -2,10 +2,15 @@ TO DO
 Application Executions
 Backend
 > get Markdown Syntax of Tutorial on GitHub
+
 > Picture Storage Solution: File Storage, so How? (Google Drive API)
-    Status: can't solve URI mismatch Error
-> Database to save ppe Detection records - DONE
-    Save data to PostgreSQL , specifically NeonDB via psycopg2 - DONE
+    Create Folder - DONE
+    Upload Photo to Folder - DONE
+    Trash Folder/File - DONE
+    Search Folders
+
+> Database to save ppe Detection records
+    Save screenshot metadata to PostgreSQL , specifically NeonDB via psycopg2 - DONE
     Make VIEW for Query screenshots that are:
         Complete PPE 
         No Mask
