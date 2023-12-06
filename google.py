@@ -23,7 +23,6 @@ def upload_photo(file_path:str):
     creds = authenticate()
     try:
         service = build('drive','v3',credentials=creds)
-
         file_metadata = {
           'name': file_path.replace(".jpg",""), 
           # I hope the .jpg string only shows up in the end of very and of the filename
@@ -32,7 +31,6 @@ def upload_photo(file_path:str):
           "type": "anyone",
           'allowFileDiscovery': True
         }
-
         file = service.files().create(
             body=file_metadata,
             media_body=file_path,
@@ -40,7 +38,6 @@ def upload_photo(file_path:str):
         ).execute()
         print(f'File ID: "{file.get("id")}".')
         return file.get("id")
-    
     except HttpError as error:
         print(f"An error occurred: {error}")
         return None
@@ -55,18 +52,17 @@ def create_folder(fileName):
     service = build("drive", "v3", credentials=creds)
     file_metadata = {
         "name": fileName,
-        "mimeType": "application/vnd.google-apps.folder",
+        "mimeType": "application/vnd.google-apps.folder" ,
         'parents':[PARENT_FOLDER_ID],
         "role": "reader",
         "type": "anyone",
         'allowFileDiscovery': True
     }
-
     # pylint: disable=maybe-no-member
     file = service.files().create(body=file_metadata, fields="id").execute()
-    print(f'Folder ID: "{file.get("id")}".')
+    newFolderURL = f'Folder URL: https://drive.google.com/drive/u/0/folders/"{file.get("id")}".'
+    print(newFolderURL)
     return file.get("id")
-
   except HttpError as error:
     print(f"An error occurred: {error}")
     return None
@@ -80,7 +76,6 @@ def upload_to_folder(folder_id, file_path):
   try:
     # create drive api client
     service = build("drive", "v3", credentials=creds)
-
     file_metadata = {
         "name": file_path.replace(".jpeg",""), 
         # I hope the .jpg string only shows up in teh very and of the filename
@@ -100,12 +95,12 @@ def upload_to_folder(folder_id, file_path):
     )
     print(f'File ID: "{file.get("id")}".')
     return file.get("id")
-
   except HttpError as error:
     print(f"An error occurred: {error}")
     return None
   
 def trashFileOrFolder(id):
+  """Move a folder/file to Trash"""
   creds = authenticate()
   try:
     # create drive api client
@@ -117,6 +112,61 @@ def trashFileOrFolder(id):
         service.files().update(fileId=id,body=body_value).execute()
     )
     print(f'File deleted: "{file}".')
-
   except HttpError as error:
     print(f"An error occurred: {error}")
+
+def deleteFileOrFolder(id):
+  """Delete a folder/file"""
+  creds = authenticate()
+  try:
+    # create drive api client
+    service = build("drive", "v3", credentials=creds)
+    file = (
+        service.files().delete(fileId=id).execute()
+    )
+    print(f'File deleted: "{file}".')
+  except HttpError as error:
+    print(f"An error occurred: {error}")    
+
+def emptyTrash():
+  """Empty Trash"""
+  creds = authenticate()
+  try:
+    service = build("drive", "v3", credentials=creds)
+    response = service.files().emptyTrash().execute()
+    return response
+  except HttpError as error:
+    print(f"An error occurred: {error}")
+    return None
+
+def search_drive(name):
+  """Search files in drive location containing a certain string"""
+  creds = authenticate()
+  try:
+    # create drive api client
+    service = build("drive", "v3", credentials=creds)
+    files = []
+    page_token = None
+    while True:
+      # pylint: disable=maybe-no-member
+      response = (
+          service.files()
+          .list(
+              q=f"name contains '{name}'",
+              spaces="drive",
+              fields="nextPageToken, files(id, name)",
+              pageToken=page_token
+          )
+          .execute()
+      )
+      for file in response.get("files", []):
+        # Process change
+        print(f'Found file: {file.get("name")}, {file.get("id")}')
+      files.extend(response.get("files", []))
+      page_token = response.get("nextPageToken", None)
+      if page_token is None:
+        break
+  except HttpError as error:
+    print(f"An error occurred: {error}")
+    files = None
+  return files
