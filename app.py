@@ -1,4 +1,5 @@
 from flask import Flask, render_template, Response
+import googleMod as go
 from dotenv import load_dotenv
 from datetime import datetime
 from ultralytics import YOLO
@@ -26,7 +27,7 @@ conn = psycopg2.connect(
         database= os.getenv('DB_NAME'),
         user= os.getenv('DB_USER'),
         password= os.getenv('DB_PASSWORD'),
-        sslmode='require'
+        sslmode='require',
         )
 
 def generate_frames():
@@ -54,19 +55,41 @@ def generate_frames():
 def take_screenshot(results):
     '''Takes a Screenshot and saves it to a designated directory'''
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    screenshot_fileLoc = f'screenshots/screenshot{current_time}.jpg'
-    screenshot_filename = f'screenshot{current_time}.jpg'
+    screenshot_fileLoc = f'screenshots/screenshot{current_time}.jpg' #temporary local storage
+    googleFileName = screenshot_fileLoc[len('screenshots/'):-len('.jpg')]
     cv2.imwrite(screenshot_fileLoc, results[0].plot())
-    print(f'Screenshot saved: {screenshot_fileLoc}')  # FileLocation
+
+    # Uploads screenshot to Google Drive
     classArray = results[0].boxes.cls.numpy().copy()
     objArray = [0] * (max(results[0].names)+1)
     for value in classArray:
         objArray[int(value)] += 1 # Counts the frequencies a class(index) is detected in frame 
+    newPic = go.upload_to_folder(go.search_drive(datetime.now().strftime("%Y-%m-%d"))[0]['id'],screenshot_fileLoc)
 
-    upload_metadata(screenshot_filename,screenshot_fileLoc,datetime.now().strftime("%Y-%m-%d %H:%M:%S"),objArray)
+    # Uploads screenshot metadata to postgres Database
+    upload_metadata(
+        googleFileName,                                     #file Name
+        f'https://drive.google.com/file/d/{newPic}/view',   # file URL (Google Drive)
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),       # Date Time
+        objArray                                            # Object Count Array
+        )
+    
+    # Removes 
+    os.remove(screenshot_fileLoc) #Delete Screenshot in local machine Permanently
+    folder_name = "screenshots"
+    folder_path = os.path.join(os.path.dirname(__file__), folder_name)
+    file_list = os.listdir(folder_path)
+    for file_name in file_list:
+        file_path = os.path.join(folder_path, file_name)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+                print(f"Removed: {file_path}")
+        except Exception as e:
+            print(f"Error removing {file_path}: {e}")
 
 def upload_metadata(filename,fileLoc,datetime,array):
-    '''Uploads Screenshot Metadata to Database'''
+    '''Uploads Screenshot Metadata to postgres Database (NeonDB)'''
     cur = conn.cursor()
     cur.execute(
         query='INSERT INTO ppe_log (photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount) VALUES (%s, %s, %s,%s, %s, %s, %s, %s,%s)',
@@ -78,6 +101,10 @@ def upload_metadata(filename,fileLoc,datetime,array):
 
 @app.route('/')
 def index():
+    cloudFileName = datetime.now().strftime("%Y-%m-%d") 
+    if go.search_drive(cloudFileName) == []:
+        go.create_folder(cloudFileName)
+        print(f'Folder {cloudFileName} created')
     return render_template('index.html')
 
 @app.route('/video_feed')
