@@ -77,7 +77,7 @@ def upload_to_folder(folder_id, file_path):
     # create drive api client
     service = build("drive", "v3", credentials=creds)
     file_metadata = {
-        "name": file_path.replace(".jpeg",""), 
+        "name": file_path.replace(".jpg",""), 
         # I hope the .jpg string only shows up in teh very and of the filename
         "parents": [folder_id],
         "role": "reader",
@@ -170,3 +170,11 @@ def search_drive(name):
     print(f"An error occurred: {error}")
     files = None
   return files
+
+
+def folderEveryDay(time):
+  if search_drive(time) == []:
+    create_folder(time)
+
+
+print(search_drive("ppe"))
