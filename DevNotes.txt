@@ -12,7 +12,8 @@ Backend
 > Database to save ppe Detection records
     Save screenshot metadata to PostgreSQL , specifically NeonDB via psycopg2 - DONE
     Make VIEW for Query screenshots that are:
-        Complete PPE 
+        Today's screenshots - DONE
+        No Any - DONE
         No Mask
         No Apron 
         No Gloves 
@@ -21,7 +22,6 @@ Backend
         No Goggles
 
 > Create Admin dashboard to query certain screenshots - PRIO
-    Create SQL VIEWS for certain Queries
     Create Admin dashboard?
         FrontEnd
         BackEnd
