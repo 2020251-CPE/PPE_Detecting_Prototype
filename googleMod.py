@@ -170,11 +170,3 @@ def search_drive(name):
     print(f"An error occurred: {error}")
     files = None
   return files
-
-
-def folderEveryDay(time):
-  if search_drive(time) == []:
-    create_folder(time)
-
-
-print(search_drive("ppe"))
