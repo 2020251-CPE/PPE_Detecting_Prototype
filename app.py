@@ -1,10 +1,9 @@
 from flask import Flask, render_template, Response
-import googleMod as go
-from dotenv import load_dotenv
 from datetime import datetime
 from ultralytics import YOLO
+import queries as que
+import googleMod as go
 import threading
-import psycopg2
 import time
 import cv2
 import os
@@ -20,15 +19,6 @@ now = datetime.now()
 show_live_camera = True  # Flag to toggle between live camera and uploaded content
 last_screenshot_time = time.time()  # Variable to track the last screenshot time
 screenshot_interval = 6  # Set the interval for taking screenshots (in seconds)
-
-load_dotenv()
-conn = psycopg2.connect(
-        host= os.getenv('DB_HOST'),
-        database= os.getenv('DB_NAME'),
-        user= os.getenv('DB_USER'),
-        password= os.getenv('DB_PASSWORD'),
-        sslmode='require',
-        )
 
 def generate_frames():
     global last_screenshot_time
@@ -67,7 +57,7 @@ def take_screenshot(results):
     newPic = go.upload_to_folder(go.search_drive(datetime.now().strftime("%Y-%m-%d"))[0]['id'],screenshot_fileLoc)
 
     # Uploads screenshot metadata to postgres Database
-    upload_metadata(
+    que.upload_metadata(
         googleFileName,                                     #file Name
         f'https://drive.google.com/file/d/{newPic}/view',   # file URL (Google Drive)
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),       # Date Time
@@ -88,16 +78,6 @@ def take_screenshot(results):
         except Exception as e:
             print(f"Error removing {file_path}: {e}")
 
-def upload_metadata(filename,fileLoc,datetime,array):
-    '''Uploads Screenshot Metadata to postgres Database (NeonDB)'''
-    cur = conn.cursor()
-    cur.execute(
-        query='INSERT INTO ppe_log (photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount) VALUES (%s, %s, %s,%s, %s, %s, %s, %s,%s)',
-        vars=(filename, fileLoc, datetime, array[0], array[1], array[2], array[3], array[4], array[5])
-        )
-    conn.commit()
-    cur.close()
-
 
 @app.route('/')
 def index():
@@ -112,5 +92,9 @@ def video_feed():
     if show_live_camera:
         return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     
+#@app.route('/logs')    
+#def latest_logs():
+#    return Response()
+    
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
