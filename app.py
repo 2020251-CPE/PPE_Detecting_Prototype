@@ -1,6 +1,7 @@
 from flask import Flask, render_template, Response
 from datetime import datetime
 from ultralytics import YOLO
+from flask_cors import CORS
 import queries as que
 import googleMod as go
 import threading
@@ -9,6 +10,7 @@ import cv2
 import os
 
 app = Flask(__name__)
+CORS(app)
 os.makedirs('screenshots', exist_ok=True)
 # Load YOLO model
 model = YOLO('finalBest.pt')
@@ -54,30 +56,31 @@ def take_screenshot(results):
     objArray = [0] * (max(results[0].names)+1)
     for value in classArray:
         objArray[int(value)] += 1 # Counts the frequencies a class(index) is detected in frame 
-    newPic = go.upload_to_folder(go.search_drive(datetime.now().strftime("%Y-%m-%d"))[0]['id'],screenshot_fileLoc)
+    newPic = go.upload_to_folder(go.search_drive(datetime.now().strftime("%Y-%m-%d"))[0]['id'],googleFileName)
 
     # Uploads screenshot metadata to postgres Database
     que.upload_metadata(
-        googleFileName,                                     #file Name
+        googleFileName,                                     # file Name
         f'https://drive.google.com/file/d/{newPic}/view',   # file URL (Google Drive)
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),       # Date Time
         objArray                                            # Object Count Array
         )
     
-    # Removes 
-    os.remove(screenshot_fileLoc) #Delete Screenshot in local machine Permanently
-    folder_name = "screenshots"
-    folder_path = os.path.join(os.path.dirname(__file__), folder_name)
-    file_list = os.listdir(folder_path)
-    for file_name in file_list:
-        file_path = os.path.join(folder_path, file_name)
-        try:
+    # Delete Photos from temp directory 
+    try:
+        os.remove(screenshot_fileLoc) #Delete Screenshot in local machine Permanently
+        folder_name = "screenshots"
+        folder_path = os.path.join(os.path.dirname(__file__), folder_name)
+        file_list = os.listdir(folder_path)
+        for file_name in file_list:
+            file_path = os.path.join(folder_path, file_name)
             if os.path.isfile(file_path):
                 os.remove(file_path)
                 print(f"Removed: {file_path}")
-        except Exception as e:
-            print(f"Error removing {file_path}: {e}")
-
+    except FileNotFoundError:
+        print(f"File '{screenshot_fileLoc}' not found. Skipping removal.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 @app.route('/')
 def index():
@@ -92,9 +95,24 @@ def video_feed():
     if show_live_camera:
         return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     
-#@app.route('/logs')    
-#def latest_logs():
-#    return Response()
+@app.route('/logs')    
+def latest_logs():
+    return Response(que.get_logs(),content_type='text/plain')
     
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    try:
+        app.run(debug=True, threaded=True)
+    except KeyboardInterrupt:
+        folder_name = "screenshots"
+        folder_path = os.path.join(os.path.dirname(__file__), folder_name)
+        file_list = os.listdir(folder_path)
+        print("Removing screenshots")  
+        for file_name in file_list:
+            file_path = os.path.join(folder_path, file_name)
+            try:
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+                    print(f"Removed: {file_path}")
+            except Exception as e:
+                print(f"Error removing {file_path}: {e}")
+        print("Exiting gracefully.")        
