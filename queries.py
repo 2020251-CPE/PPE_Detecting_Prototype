@@ -28,7 +28,15 @@ def get_logs(options="today"):
         cur.execute(
             query='SELECT * FROM todayRows ORDER BY dateAndTime DESC'
         )
+        rows = cur.fetchall()
+        cur.close()
+        rows_str = '\n'.join(str(row) for row in rows)
+        return rows_str
     elif options == "all":
         cur.execute(
             query='SELECT * FROM ppe_log'
         )
+        rows = cur.fetchall()
+        cur.close()
+        rows_str = '\n'.join(str(row) for row in rows)
+        return rows_str
