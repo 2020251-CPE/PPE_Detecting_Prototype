@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import psycopg2.extras
 import psycopg2
 import os
 
@@ -23,20 +24,20 @@ def upload_metadata(filename,fileLoc,datetime,array):
 
 def get_logs(options="today"):
     """Get Certain Queries"""
-    cur = conn.cursor()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     if options == "today":
         cur.execute(
             query='SELECT * FROM todayRows ORDER BY dateAndTime DESC'
         )
         rows = cur.fetchall()
         cur.close()
-        rows_str = '\n'.join(str(row) for row in rows)
-        return rows_str
+        rows_dict = '\n'.join(str(dict(row)) for row in rows)
+        return rows_dict
     elif options == "all":
         cur.execute(
             query='SELECT * FROM ppe_log'
         )
         rows = cur.fetchall()
         cur.close()
-        rows_str = '\n'.join(str(row) for row in rows)
-        return rows_str
+        rows_dict = ','.join(str(dict(row)) for row in rows)
+        return rows_dict
