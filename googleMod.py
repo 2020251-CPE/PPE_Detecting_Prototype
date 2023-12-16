@@ -69,7 +69,7 @@ def create_folder(fileName):
 
 def upload_to_folder(folder_id, file_path):
   """Upload a file to the specified folder and prints file ID, folder ID
-  Args: Id of the folder
+  Args: Id of the folder, path of the file
   Returns: ID of the file uploaded
   NOTE: upload speed may vary depend on Internet Speed"""
   creds = authenticate()
