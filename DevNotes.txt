@@ -1,6 +1,7 @@
 TO DO
 Application Executions
 Backend
+> Close take_screenshot thread is no object is detected in X minutes
 > get Markdown Syntax of Tutorial on GitHub
 
 > Picture Storage Solution: File Storage, so How? (Google Drive API)
@@ -8,6 +9,7 @@ Backend
     Upload Photo to Folder - DONE
     Trash Folder/File - DONE
     Search Folders - DONE (returns dict{id:"", name:""})
+    Make Pictures and folders only available to certain emails
 
 > Database to save ppe Detection records
     Save screenshot metadata to PostgreSQL , specifically NeonDB via psycopg2 - DONE
