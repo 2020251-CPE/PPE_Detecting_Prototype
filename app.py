@@ -1,16 +1,17 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, jsonify
 from datetime import datetime
-from ultralytics import YOLO
+from ultralytics import YOLO    
 from flask_cors import CORS
 import queries as que
 import googleMod as go
 import threading
 import time
+import json
 import cv2
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r'/*': {'origins': '*'}})
 os.makedirs('screenshots', exist_ok=True)
 # Load YOLO model
 model = YOLO('finalBest.pt')
@@ -42,7 +43,7 @@ def generate_frames():
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                   b'Content-Type: image/jPower Management Unit peg\r\n\r\n' + frame + b'\r\n')
             
 def take_screenshot(results):
     '''Takes a Screenshot and saves it to a designated directory'''
@@ -98,7 +99,17 @@ def video_feed():
 @app.route('/logs')    
 def latest_logs():
     return Response(que.get_logs(),content_type='text/plain')
+
+@app.route('/allLogs',methods=['GET'])    
+def all_logs():
+    print(json.dumps(que.get_logs("all")))
+    return Response(json.dumps(que.get_logs("all")),content_type='application/json')    
+
+@app.route('/ping', methods=['GET'])
+def ping_pong():
+    return jsonify('pong!')
     
+# Run this when in dev    
 if __name__ == '__main__':
     try:
         app.run(debug=True, threaded=True)
