@@ -12,32 +12,70 @@ conn = psycopg2.connect(
         sslmode='require',
         )
 
-def upload_metadata(filename,fileLoc,datetime,array):
-    '''Uploads Screenshot Metadata to postgres Database (NeonDB)'''
-    cur = conn.cursor()
-    cur.execute(
-        query='INSERT INTO ppe_log (photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount) VALUES (%s, %s, %s,%s, %s, %s, %s, %s,%s)',
-        vars=(filename, fileLoc, datetime, array[0], array[1], array[2], array[3], array[4], array[5])
+def connect():
+    conn = psycopg2.connect(
+        host= os.getenv('DB_HOST'),
+        database= os.getenv('DB_NAME'),
+        user= os.getenv('DB_USER'),
+        password= os.getenv('DB_PASSWORD'),
+        sslmode='require',
         )
-    conn.commit()
-    cur.close()
+    return conn
+
+def upload_metasordata(filename,fileLoc,datetime,array):
+    '''Uploads Screenshot Metadata to postgres Database (NeonDB)'''
+    try:
+        conn = connect()
+        cur = conn.cursor()
+        cur.execute(
+            query='INSERT INTO ppe_log (photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount) VALUES (%s, %s, %s,%s, %s, %s, %s, %s,%s)',
+            vars=(filename, fileLoc, datetime, array[0], array[1], array[2], array[3], array[4], array[5])
+            )
+        conn.commit()
+        cur.close()
+    except psycopg2.InterfaceError as e:
+        print('{} - connection will be reset'.format(e))
+        # Close old connection 
+        if conn:
+            if cur:
+                cur.close()
+            conn.close()
+        conn = None
+        cur = None
+        #Reconnect
+        conn = connect()
+        conn.cursor()
 
 def get_logs(options="today"):
     """Get Certain Queries"""
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    if options == "today":
-        cur.execute(
-            query='SELECT * FROM todayRows ORDER BY dateAndTime DESC'
-        )
-        rows = cur.fetchall()
-        cur.close()
-        rows_dict = '\n'.join(str(dict(row)) for row in rows)
-        return rows_dict
-    elif options == "all":
-        cur.execute(
-            query='SELECT * FROM ppe_log'
-        )
-        rows = cur.fetchall()
-        cur.close()
-        rows_dict = ','.join(str(dict(row)) for row in rows)
-        return rows_dict
+    try:
+        conn = connect()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        if options == "today":
+            cur.execute(
+                query='SELECT * FROM todayRows ORDER BY dateAndTime DESC'
+            )
+            rows = cur.fetchall()
+            cur.close()
+            rows_dict = '\n'.join(str(dict(row)) for row in rows)
+            return rows_dict
+        elif options == "all":
+            cur.execute(
+                query='SELECT * FROM ppe_log'
+            )
+            rows = cur.fetchall()
+            cur.close()
+            rows_dict = ','.join(str(dict(row)) for row in rows)
+            return rows_dict
+    except psycopg2.InterfaceError as e:
+        print('{} - connection will be reset'.format(e))
+        # Close old connection 
+        if conn:
+            if cur:
+                cur.close()
+            conn.close()
+        conn = None
+        cur = None
+        #Reconnect
+        conn = connect()
+        conn.cursor()
