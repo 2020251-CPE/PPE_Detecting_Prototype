@@ -6,7 +6,6 @@ import queries as que
 import googleMod as go
 import threading
 import time
-import json
 import cv2
 import os
 
@@ -63,7 +62,7 @@ def take_screenshot(results):
     que.upload_metadata(
         googleFileName,                                     # file Name
         f'https://drive.google.com/file/d/{newPic}/view',   # file URL (Google Drive)
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),       # Date Time
+        datetime.strftime(current_time,"%Y-%m-%d %H:%M:%S"),       # Date Time
         objArray                                            # Object Count Array
         )
     
@@ -96,16 +95,11 @@ def video_feed():
     if show_live_camera:
         return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     
-@app.route('/logs')    
-def latest_logs():
-    return Response(que.get_logs(),content_type='text/plain')
-
 @app.route('/allLogs',methods=['GET'])    
 def all_logs():
-    print(json.dumps(que.get_logs("all")))
-    return Response(json.dumps(que.get_logs("all")),content_type='application/json')    
+    return jsonify(que.get_logs("all"))
 
-@app.route('/ping', methods=['GET'])
+@app.route('/ping', methods=['GET']) #for San Checks
 def ping_pong():
     return jsonify('pong!')
     
