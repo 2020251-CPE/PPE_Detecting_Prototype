@@ -1,7 +1,30 @@
 <template>
-      <button type="button" class="btn btn-primary">{{ msg }}</button>
+  <div>
+    <table v-if="msg.length > 0" class="table">
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th>TimeStamp</th>
+          <th>Apron Count</th>
+          <th>Bunnysuit Count</th>
+          <th>Mask Count</th>
+          <th>Gloves Count </th>
+          <th>Goggles Count</th>
+          <th>Headcap Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(item, index) in msg" :key="index">
+          <td>{{ item.fileName }} <a :href="item[1]" target="_blank">{{ item[0] }}</a></td>
+          <td v-for="(value, key) in item.slice(2)" :key="key">{{ value }}</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div v-else>No logs available.</div>
+  </div>
+</template>
 
-  </template>
   
   <script>
   import axios from 'axios';
@@ -10,12 +33,13 @@
     name: 'Logs',
     data() {
       return {
-        msg: '',
+        msg: [],
       };
     },
     methods: {
       getMessage() {
         const path = 'http://localhost:5001/allLogs';
+        
         axios.get(path)
           .then((res) => {
             this.msg = res.data;
