@@ -1,3 +1,4 @@
+from flask import jsonify
 from dotenv import load_dotenv
 import psycopg2.extras
 import psycopg2
@@ -22,7 +23,7 @@ def connect():
         )
     return conn
 
-def upload_metasordata(filename,fileLoc,datetime,array):
+def upload_metadata(filename,fileLoc,datetime,array):
     '''Uploads Screenshot Metadata to postgres Database (NeonDB)'''
     try:
         conn = connect()
@@ -57,16 +58,14 @@ def get_logs(options="today"):
             )
             rows = cur.fetchall()
             cur.close()
-            rows_dict = '\n'.join(str(dict(row)) for row in rows)
-            return rows_dict
+            return rows
         elif options == "all":
             cur.execute(
-                query='SELECT * FROM ppe_log'
+                query='SELECT photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount FROM ppe_log'
             )
             rows = cur.fetchall()
             cur.close()
-            rows_dict = ','.join(str(dict(row)) for row in rows)
-            return rows_dict
+            return rows
     except psycopg2.InterfaceError as e:
         print('{} - connection will be reset'.format(e))
         # Close old connection 
@@ -79,3 +78,5 @@ def get_logs(options="today"):
         #Reconnect
         conn = connect()
         conn.cursor()
+    except Exception as e:
+        return jsonify(error=str(e))
