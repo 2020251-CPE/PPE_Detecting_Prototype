@@ -5,13 +5,6 @@ import psycopg2
 import os
 
 load_dotenv()
-conn = psycopg2.connect(
-        host= os.getenv('DB_HOST'),
-        database= os.getenv('DB_NAME'),
-        user= os.getenv('DB_USER'),
-        password= os.getenv('DB_PASSWORD'),
-        sslmode='require',
-        )
 
 def connect():
     conn = psycopg2.connect(
@@ -23,14 +16,14 @@ def connect():
         )
     return conn
 
-def upload_metadata(filename,fileLoc,datetime,array):
+def upload_metadata(filename,fileLoc,hostName,datetime,array):
     '''Uploads Screenshot Metadata to postgres Database (NeonDB)'''
     try:
         conn = connect()
         cur = conn.cursor()
         cur.execute(
-            query='INSERT INTO ppe_log (photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount) VALUES (%s, %s, %s,%s, %s, %s, %s, %s,%s)',
-            vars=(filename, fileLoc, datetime, array[0], array[1], array[2], array[3], array[4], array[5])
+            query='INSERT INTO ppe_log (photoName,photoURL,hostName,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount) VALUES (%s, %s, %s,%s, %s, %s, %s, %s,%s)',
+            vars=(filename, fileLoc,hostName ,datetime, array[0], array[1], array[2], array[3], array[4], array[5])
             )
         conn.commit()
         cur.close()
