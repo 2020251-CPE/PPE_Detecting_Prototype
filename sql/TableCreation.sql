@@ -11,3 +11,6 @@ CREATE TABLE ppe_log (
     gogglesCount    INT NOT NULL,
     headcapCount    INT NOT NULL
 );
+
+ALTER TABLE ppe_log
+ADD hostName VARCHAR(50);
