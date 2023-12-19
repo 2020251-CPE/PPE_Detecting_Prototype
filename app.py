@@ -5,6 +5,7 @@ from flask_cors import CORS
 import queries as que
 import googleMod as go
 import threading
+import socket
 import time
 import cv2
 import os
@@ -60,10 +61,11 @@ def take_screenshot(results):
 
     # Uploads screenshot metadata to postgres Database
     que.upload_metadata(
-        googleFileName,                                     # file Name
-        f'https://drive.google.com/file/d/{newPic}/view',   # file URL (Google Drive)
-        datetime.strftime(current_time,"%Y-%m-%d %H:%M:%S"),       # Date Time
-        objArray                                            # Object Count Array
+        filename=googleFileName,                                        # file Name
+        fileLoc=f'https://drive.google.com/file/d/{newPic}/view',       # file URL (Google Drive)
+        hostName=socket.gethostname(),                                  # Hostname
+        datetime=datetime.strftime(current_time,"%Y-%m-%d %H:%M:%S"),   # Date Time
+        array=objArray                                                  # Object Count Array
         )
     
     # Delete Photos from temp directory 
