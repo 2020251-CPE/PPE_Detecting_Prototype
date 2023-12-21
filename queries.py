@@ -97,4 +97,3 @@ def get_logs(options:str="today", DetectArr:List[bool] = [True, True, True, True
     except Exception as e:
         return jsonify(error=str(e))
     
-print(get_logs('all'))
