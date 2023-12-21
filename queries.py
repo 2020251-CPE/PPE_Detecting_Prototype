@@ -1,5 +1,6 @@
 from flask import jsonify
 from dotenv import load_dotenv
+from typing import List
 import psycopg2.extras
 import psycopg2
 import os
@@ -40,12 +41,34 @@ def upload_metadata(filename,fileLoc,hostName,datetime,array):
         conn = connect()
         conn.cursor()
 
-def get_logs(options="today"):
+def generate_sql_condition(isEmptyArr:List[bool], columnArr, finalString:str)->str:
+    """Generates WHERE Condition to Database Query
+    Specifically, a False value in isEmptyArr on a certain index 
+    corresponds to a 0 value to the column named according to the same index in columnArr """
+    try:
+        conditions = []
+        for i, isEmpty in enumerate(isEmptyArr):
+            if not isEmpty:
+                conditions.append(f"{columnArr[i]} = 0")
+        if conditions:
+            condition_str = ' OR '.join(conditions)
+            finalString += condition_str
+        else:
+            finalString += '1=1'  # If no conditions, default to true condition
+        return finalString    
+    except Exception as e:
+        return jsonify(error=str(e))
+    
+
+def get_logs(options:str="today", DetectArr:List[bool] = [True, True, True, True, True, True]):
     """Get Certain Queries"""
+    colArr = ('apronCount', 'bunnysuitCount', 'maskCount', 'glovesCount', 'gogglesCount', 'headcapCount')
+    finalStr = 'Where '
     try:
         conn = connect()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         if options == "today":
+            query = f'SELECT * FROM todayRows ORDER BY dateAndTime ${generate_sql_condition(DetectArr,colArr,finalStr)} DESC'
             cur.execute(
                 query='SELECT * FROM todayRows ORDER BY dateAndTime DESC'
             )
@@ -53,9 +76,9 @@ def get_logs(options="today"):
             cur.close()
             return rows
         elif options == "all":
-            cur.execute(
-                query='SELECT photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount FROM ppe_log'
-            )
+            query = "SELECT photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount FROM ppe_log "+generate_sql_condition(DetectArr,colArr,finalStr)
+            print(query)
+            cur.execute(query)
             rows = cur.fetchall()
             cur.close()
             return rows
@@ -73,3 +96,5 @@ def get_logs(options="today"):
         conn.cursor()
     except Exception as e:
         return jsonify(error=str(e))
+    
+print(get_logs('all'))
