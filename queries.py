@@ -1,4 +1,5 @@
 from flask import jsonify
+from customExcept import UnequalArrayLengthException
 from dotenv import load_dotenv
 from typing import List
 import psycopg2.extras
@@ -42,10 +43,14 @@ def upload_metadata(filename,fileLoc,hostName,datetime,array):
         conn.cursor()
 
 def generate_sql_condition(isEmptyArr:List[bool], columnArr, finalString:str)->str:
-    """Generates WHERE Condition to Database Query
+    """Generates WHERE Condition to Database Query where column = 0.
     Specifically, a False value in isEmptyArr on a certain index 
-    corresponds to a 0 value to the column named according to the same index in columnArr """
+    corresponds to a 0 value to the column named according to the same index in columnArr 
+    Returns : String
+    NOTE: isEmptyArr must have teh same length as columnArr"""
     try:
+        if len(isEmptyArr) != len(columnArr): 
+            raise UnequalArrayLengthException()            
         conditions = []
         for i, isEmpty in enumerate(isEmptyArr):
             if not isEmpty:
