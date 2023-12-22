@@ -15,7 +15,6 @@ def authenticate():
     creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     return creds
 
-#https://drive.google.com/file/d/1o7kbL39Hy6u_c9KTxSGQDJN-hY_e8pV2/view?usp=sharing
 def upload_photo(file_path:str):
     """Upload File to Parent Folder and prints the folder ID
     Returns : Folder Id
@@ -24,12 +23,9 @@ def upload_photo(file_path:str):
     try:
         service = build('drive','v3',credentials=creds)
         file_metadata = {
-          'name': file_path.replace(".jpg",""), 
-          # I hope the .jpg string only shows up in the end of very and of the filename
+          'name': file_path.replace(".jpg",""), # I hope the .jpg string only shows up in the end of very and of the filename
           'parents':[PARENT_FOLDER_ID],
-          "role": "reader",
-          "type": "anyone",
-          'allowFileDiscovery': True
+          "role": "reader"
         }
         file = service.files().create(
             body=file_metadata,
@@ -54,9 +50,7 @@ def create_folder(fileName):
         "name": fileName,
         "mimeType": "application/vnd.google-apps.folder" ,
         'parents':[PARENT_FOLDER_ID],
-        "role": "reader",
-        "type": "anyone",
-        'allowFileDiscovery': True
+        "role": "reader"
     }
     # pylint: disable=maybe-no-member
     file = service.files().create(body=file_metadata, fields="id").execute()
@@ -80,9 +74,7 @@ def upload_to_folder(folder_id, file_path):
         "name": file_path.replace(".jpg",""), 
         # I hope the .jpg string only shows up in teh very and of the filename
         "parents": [folder_id],
-        "role": "reader",
-        "type": "anyone",
-        'allowFileDiscovery': True
+        "role": "reader"
         }
     media = MediaFileUpload(
         file_path, mimetype="image/jpeg", resumable=True
