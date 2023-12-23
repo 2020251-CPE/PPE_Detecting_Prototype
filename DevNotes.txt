@@ -9,7 +9,7 @@ Backend
     Upload Photo to Folder - DONE
     Trash Folder/File - DONE
     Search Folders - DONE (returns dict{id:"", name:""})
-    Make Pictures and folders only available to certain emails
+    Make Pictures and folders only available to certain emails - DONE
 
 > Database to save ppe Detection records
     Save screenshot metadata to PostgreSQL , specifically NeonDB via psycopg2 - DONE
@@ -35,3 +35,4 @@ OTHER NOTES:
     suggestions on how to fix this?
     > Update: screenshot process is separated via its own function running in its own thread
 > in later stage of development, do not plot detected objects if confidence is lower that .60
+> Try implement color mask for better accuracy?
