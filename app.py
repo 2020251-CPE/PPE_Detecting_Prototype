@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, jsonify
+from flask import Flask, render_template, Response, jsonify, request
 from datetime import datetime
 from ultralytics import YOLO    
 from flask_cors import CORS
@@ -97,9 +97,16 @@ def video_feed():
     if show_live_camera:
         return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     
-@app.route('/allLogs',methods=['GET'])    
-def all_logs():
-    return jsonify(que.get_logs("all"))
+@app.route('/allLogs/<option>',methods=['GET'])    
+def all_logs(option:str):
+    if request.method == 'GET' and (option.lower() == 'all' or option.lower()== 'today'):
+        # Sample URL Argument: ?aC=1 is equal to apronCount is not equal to 0
+        args_list = ['aC', 'bSC', 'mC', 'gLC', 'gOC', 'hCC']
+        boolArr = [True if request.args.get(arg) is None else False for arg in args_list]
+        print(boolArr)
+        return jsonify(que.get_logs(option,boolArr))
+    else:
+        return 'Invalid request method or Invalid Route'
 
 @app.route('/ping', methods=['GET']) #for San Checks
 def ping_pong():
