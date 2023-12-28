@@ -1,9 +1,8 @@
 <template>
   <div>
-    <button class="btn" @click="toggleButton" :class="{ 'btn-secondary': isActive, 'btn-dark': !isActive }">
+    <button class="btn" @click="toggleButton" :class="{ 'btn-dark': isActive, 'btn-secondary': !isActive }">
       {{ buttonText }}
     </button>
-    <p v-if="isActive" class="mt-2">Button is active!</p>
   </div>
 </template>
 
@@ -11,19 +10,19 @@
 export default {
   name:'ToggleButton',
   props: {
-    buttonText: {
-      type: String,
-      default: 'Toggle'
-    }
+    buttonText: { type: String, required: true, default: 'Toggle' },
+    index:{ type:Number, required: true },
+    isActiveProp:{ type:Boolean, required: true, default:false}
   },
   data() {
     return {
-      isActive: false
+      isActive: this.isActiveProp
     };
   },
   methods: {
     toggleButton() {
       this.isActive = !this.isActive;
+      this.$emit('toggle', this.index, this.isActive);
     }
   },
 };
