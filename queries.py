@@ -18,7 +18,7 @@ def connect():
         )
     return conn
 
-def upload_metadata(filename,fileLoc,hostName,datetime,array):
+def upload_metadata(filename:str,fileLoc:str,hostName:str,datetime,array:List[int]):
     '''Uploads Screenshot Metadata to postgres Database (NeonDB)'''
     try:
         conn = connect()
@@ -81,7 +81,7 @@ def get_logs(options:str="today", DetectArr:List[bool] = [True, True, True, True
             cur.close()
             return rows
         elif options == "all":
-            query = "SELECT photoName,photoURL,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount FROM ppe_log "+generate_sql_condition(DetectArr,colArr,finalStr)
+            query = "SELECT photoName,photoURL,hostName,dateAndTime,apronCount,bunnysuitCount,maskCount,glovesCount,gogglesCount,headcapCount FROM ppe_log "+generate_sql_condition(DetectArr,colArr,finalStr)
             print(query)
             cur.execute(query)
             rows = cur.fetchall()
