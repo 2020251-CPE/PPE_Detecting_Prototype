@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button type="button" class="btn btn-primary">{{ msg }}</button>
+    <button type="button" class="btn btn-primary" @click="navigateToHome">{{ msg }}</button>
   </div>
 </template>
 
@@ -16,16 +16,18 @@ export default {
   },
   methods: {
     getMessage() {
-      const path = 'http://localhost:5001/ping';
+      const path = 'http://localhost:5000/ping';
       axios.get(path)
         .then((res) => {
           this.msg = res.data;
         })
         .catch((error) => {
-
           console.error(error);
         });
     },
+    navigateToHome() {
+      this.$router.push({ path:'/' });
+    }
   },
   created() {
     this.getMessage();
