@@ -1,7 +1,7 @@
 <template>
     <div class="row">
       <ToggleButton 
-      class="col-4"
+      class="togButton col-4"
       v-for="(isActive, index) in buttonStates"
       :key="index"
       :buttonText="'No '+buttonTexts[index]"
@@ -50,7 +50,7 @@
     },
     methods: {
       async getMessage() {
-        await axios.get(`http://localhost:5001/allLogs/all`, {params:this.createParam(this.paramKeys,this.buttonStates)})
+        await axios.get(`http://localhost:5000/allLogs/all`, {params:this.createParam(this.paramKeys,this.buttonStates)})
           .then((res) => {
             this.msg = res.data;
           })
@@ -80,5 +80,7 @@
 </script>
 
 <style>
-
+.togButton {
+  margin-bottom: 10px;
+}
 </style>
