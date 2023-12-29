@@ -16,17 +16,17 @@ Backend
     Make VIEW for Query screenshots that are:
         Today's screenshots - DONE
         No Any - DONE
-        No Mask
-        No Apron 
-        No Gloves 
-        No Headcap
-        No Bunny Suit
-        No Goggles
+        No Mask - DONE
+        No Apron - DONE 
+        No Gloves - DONE  
+        No Headcap - DONE 
+        No Bunny Suit - DONE 
+        No Goggles - DONE 
 
 > Create Admin dashboard to query certain screenshots - PRIO
     Create Admin dashboard?
-        FrontEnd
-        BackEnd
+        FrontEnd - DONE 
+        BackEnd - DONE 
 
 OTHER NOTES: 
 > the app.py has pretty scuffed, almost everything runs on one function- 
