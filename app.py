@@ -108,6 +108,14 @@ def all_logs(option:str):
     else:
         return 'Invalid request method or Invalid Route'
 
+@app.route('/allCols',methods=['GET'])
+def log_cols():
+    if request.method == 'GET':
+        return jsonify(que.get_log_cols())
+    else:
+        return 'Invalid request method or Invalid Route'
+    
+
 @app.route('/ping', methods=['GET']) #for San Checks
 def ping_pong():
     return jsonify('pong!')
