@@ -66,7 +66,7 @@ def generate_sql_condition(isEmptyArr:List[bool], columnArr, finalString:str)->s
     
 
 def get_logs(options:str="today", DetectArr:List[bool] = [True, True, True, True, True, True]):
-    """Get Certain Queries"""
+    """Get Logs depending on options parameter"""
     colArr = ('apronCount', 'bunnysuitCount', 'maskCount', 'glovesCount', 'gogglesCount', 'headcapCount')
     finalStr = 'Where '
     try:
@@ -101,4 +101,19 @@ def get_logs(options:str="today", DetectArr:List[bool] = [True, True, True, True
         conn.cursor()
     except Exception as e:
         return jsonify(error=str(e))
+    
+def get_log_cols():
+    """Get Columns of ppe_log table"""
+    try:
+        conn = connect()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        query = 'SELECT * FROM allColumns'
+        print(query)
+        cur.execute(query)
+        rows = cur.fetchall()
+        cur.close()
+        return rows
+    except Exception as e:
+        return jsonify(error=str(e))
+        
     
